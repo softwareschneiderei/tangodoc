@@ -6,10 +6,13 @@ from Documentation import Documentation
 class XmiParser:
 
     __type_translation_table = {
+        "pogoDsl:VoidType" : "void",
         "pogoDsl:StringType": "string",
+        "pogoDsl:ConstStringType": "string",
         "pogoDsl:IntType": "integer",
-        "pogoDsl:UShortType" : "unsigned short",
-        "pogoDsl:UIntType" : "unsigned integer"
+        "pogoDsl:UShortType" : "unsigned short integer",
+        "pogoDsl:UIntType" : "unsigned integer",
+        "pogoDsl:StateType" : "state"
     }
 
     def __translate_type(self, type):
@@ -18,11 +21,14 @@ class XmiParser:
         else:
             return type
 
+    def __get_type(self, node):
+        namespace = {'xsi' : 'http://www.w3.org/2001/XMLSchema-instance'}
+        return self.__translate_type(node.find("type").get("{%s}type" % namespace['xsi']))
+
     def parse(self, filename):
         tree = ET.parse(filename);
         root = tree.getroot()
 
-        namespace = {'xsi' : 'http://www.w3.org/2001/XMLSchema-instance'}
 
         for classinfo in root.findall("classes"):
 
@@ -31,14 +37,30 @@ class XmiParser:
             print classinfo.attrib["name"]
 
             for propertyinfo in classinfo.findall("deviceProperties"):
-                type = self.__translate_type(propertyinfo.find("type").get("{%s}type" % namespace['xsi']))
+                name = propertyinfo.attrib["name"]
+                description = propertyinfo.attrib["description"]
+                type = self.__get_type(propertyinfo)
                 default = propertyinfo.find("DefaultPropValue").text
-                print "---- PROPERTY ----"
-                print " -- %s (type=%s, default=%s)" % (propertyinfo.attrib["name"], type, default)
-                print propertyinfo.attrib["description"]
-                #result.addproperty(propertyinfo.attrib["name"], propertyinfo.attrib["description"], self.__translate_type(propertyinfo.attrib["type"]), propertyinfo.attrib["default"])
+                print "\n\nPROPERTY - %s (type=%s, default=%s)" % (name, type, default)
+                print "--"
+                print description
+                result.addproperty(name, description, type, default)
 
             for commandinfo in classinfo.findall("commands"):
-                print "---- COMMAND ----"
-                print " -- ", commandinfo.attrib["name"]
+                name = commandinfo.attrib["name"]
+                description = commandinfo.attrib["description"]
+                print "\n\nCOMMAND -  %s" % name
+                print "--"
+                print description
+                argin = commandinfo.find("argin")
+                parameter_description = argin.get("description")
+                parameter_type = self.__get_type(argin)
+                if parameter_type!="void":
+                    print "Parameter: ", parameter_description, parameter_type
+                argout = commandinfo.find("argout")
+                result_description = argout.get("description")
+                result_type = self.__get_type(argout)
+                if result_type!="void":
+                    print "Result: ", result_description, result_type
 
+                result.addcommand(name, description, parameter_type, parameter_description, result_type, result_description)
