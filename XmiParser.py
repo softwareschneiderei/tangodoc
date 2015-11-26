@@ -44,7 +44,8 @@ class XmiParser:
                 name = propertyinfo.attrib["name"]
                 description = propertyinfo.attrib["description"]
                 type = self.__get_type(propertyinfo)
-                default = propertyinfo.find("DefaultPropValue").text
+                defaultnode = propertyinfo.find("DefaultPropValue")
+                default = defaultnode.text if defaultnode is not None else "-"
                 print "\n\nPROPERTY - %s (type=%s, default=%s)" % (name, type, default)
                 print "--"
                 print ' '.join(description.splitlines())
