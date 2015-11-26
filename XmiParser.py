@@ -7,12 +7,14 @@ class XmiParser:
 
     __type_translation_table = {
         "pogoDsl:VoidType" : "void",
+        "pogoDsl:FloatType" : "float",
         "pogoDsl:StringType": "string",
         "pogoDsl:ConstStringType": "string",
         "pogoDsl:IntType": "integer",
         "pogoDsl:UShortType" : "unsigned short integer",
         "pogoDsl:UIntType" : "unsigned integer",
-        "pogoDsl:StateType" : "state"
+        "pogoDsl:StateType" : "state",
+        "pogoDsl:UIntArrayType" : "unsigned int array"
     }
 
     def __translate_type(self, type):

@@ -19,9 +19,7 @@ class MarkdownGenerator:
         for description in column_descriptions:
             column_title = description[0]
             column_get = description[1]
-            column_width.append(max(max(map(lambda e : len(column_get(e)), list)), len(column_title), minwidth))
-
-        print "widths: ", column_width
+            column_width.append(max(max(map(lambda e : len(self.oneline(column_get(e))), list)), len(column_title), minwidth))
 
         # Get the titles
         titles = map(lambda d : d[0], column_descriptions)
@@ -38,9 +36,11 @@ class MarkdownGenerator:
         # Write the actual content
         for row in list:
             # FIXME: add a newline check
-            content = map(lambda e : e[1](row), column_descriptions)
+            content = map(lambda e : self.oneline(e[1](row)), column_descriptions)
             content = map(lambda s : s[1].ljust(column_width[s[0]]), enumerate(content))
             writecolumn(content)
+
+        self.file.write("\n")
 
 
     def dump(self, documentation):
@@ -57,16 +57,27 @@ class MarkdownGenerator:
             ("Name", lambda p : p.name),
             ("Type", lambda p : p.type),
             ("Default Value", lambda p : p.default),
-            ("Description", lambda p : self.oneline(p.description))
+            ("Description", lambda p : p.description)
         ]
         self.write_table(propertytable_description, documentation.properties)
-'''
-        name_width = max(max(map(lambda p: len(p.name), documentation.properties)), len("Name"), 3)
-        description_width = max(max(map(lambda p: len(self.oneline(p.description)), documentation.properties)), len("Description"), 3)
 
-        self.file.write("| %s | %s |\n" % ("Name".ljust(name_width), "Description".ljust(description_width)))
-        self.file.write("| %s | %s |\n" % ("-"*name_width, "-"*description_width))
+        self.file.write("## Commands\n\n")
 
-        for propertyinfo in documentation.properties:
-            self.file.write("| %s | %s |\n" % (propertyinfo.name.ljust(name_width), self.oneline(propertyinfo.description).ljust(description_width)))
-'''
+        def writecommandparameter(commandinfo):
+            if commandinfo.parametertype=="void":
+                return "-"
+            return "(%s) - %s" % (commandinfo.parametertype, commandinfo.parameterdescription)
+
+        def writecommandresult(commandinfo):
+            if commandinfo.resulttype=="void":
+                return "-"
+            return "(%s) - %s" % (commandinfo.resulttype, commandinfo.resultdescription)
+
+        commandtable_description = [
+            ("Name", lambda p : p.name),
+            ("Parameter", writecommandparameter),
+            ("Result", writecommandresult),
+            ("Description", lambda p : p.description)
+        ]
+
+        self.write_table(commandtable_description, documentation.commands)
