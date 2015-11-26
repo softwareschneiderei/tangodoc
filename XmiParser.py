@@ -72,7 +72,7 @@ class XmiParser:
 
             for attributeinfo in classinfo.findall("attributes"):
                 name = attributeinfo.get("name")
-                description = ""
+                description = attributeinfo.find("properties").get("description")
                 type = self.__get_type(attributeinfo, "dataType")
                 result.addattribute(name, description, type)
 
