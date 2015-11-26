@@ -8,6 +8,7 @@ class XmiParser:
     __type_translation_table = {
         "pogoDsl:VoidType" : "void",
         "pogoDsl:FloatType" : "float",
+        "pogoDsl:BooleanType" : "boolean",
         "pogoDsl:StringType": "string",
         "pogoDsl:ConstStringType": "string",
         "pogoDsl:IntType": "integer",
@@ -23,9 +24,9 @@ class XmiParser:
         else:
             return type
 
-    def __get_type(self, node):
+    def __get_type(self, node, nodename="type"):
         namespace = {'xsi' : 'http://www.w3.org/2001/XMLSchema-instance'}
-        return self.__translate_type(node.find("type").get("{%s}type" % namespace['xsi']))
+        return self.__translate_type(node.find(nodename).get("{%s}type" % namespace['xsi']))
 
     def parse(self, filename):
         tree = ET.parse(filename);
@@ -67,6 +68,12 @@ class XmiParser:
                     print "Result: ", result_description, result_type
 
                 result.addcommand(name, description, parameter_type, parameter_description, result_type, result_description)
+
+            for attributeinfo in classinfo.findall("attributes"):
+                name = attributeinfo.get("name")
+                description = ""
+                type = self.__get_type(attributeinfo, "dataType")
+                result.addattribute(name, description, type)
 
             resultlist.append(result)
 

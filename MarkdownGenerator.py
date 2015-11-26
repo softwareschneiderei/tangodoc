@@ -19,7 +19,10 @@ class MarkdownGenerator:
         for description in column_descriptions:
             column_title = description[0]
             column_get = description[1]
-            column_width.append(max(max(map(lambda e : len(self.oneline(column_get(e))), list)), len(column_title), minwidth))
+            column_content_width = 0
+            if len(list) > 0:
+                column_content_width = max(map(lambda e : len(self.oneline(column_get(e))), list))
+            column_width.append(max(column_content_width, len(column_title), minwidth))
 
         # Get the titles
         titles = map(lambda d : d[0], column_descriptions)
@@ -81,3 +84,13 @@ class MarkdownGenerator:
         ]
 
         self.write_table(commandtable_description, documentation.commands)
+
+        self.file.write("## Attributes\n\n")
+
+        attributetable_description = [
+            ("Name", lambda p : p.name),
+            ("Type", lambda p : p.type),
+            ("Description", lambda p : p.description)
+        ]
+
+        self.write_table(attributetable_description, documentation.attributes)
