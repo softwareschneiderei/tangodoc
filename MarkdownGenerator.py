@@ -53,44 +53,47 @@ class MarkdownGenerator:
         if documentation.description:
             self.file.write("%s\n" % documentation.description)
 
-        # Write properties
-        self.file.write("## Properties\n\n")
+        if len(documentation.properties) > 0:
+            # Write properties
+            self.file.write("## Properties\n\n")
 
-        propertytable_description = [
-            ("Name", lambda p : p.name),
-            ("Type", lambda p : p.type),
-            ("Default Value", lambda p : p.default),
-            ("Description", lambda p : p.description)
-        ]
-        self.write_table(propertytable_description, documentation.properties)
+            propertytable_description = [
+                ("Name", lambda p : p.name),
+                ("Type", lambda p : p.type),
+                ("Default Value", lambda p : p.default),
+                ("Description", lambda p : p.description)
+            ]
+            self.write_table(propertytable_description, documentation.properties)
 
-        self.file.write("## Commands\n\n")
+        if len(documentation.commands) > 0:
+            self.file.write("## Commands\n\n")
 
-        def writecommandparameter(commandinfo):
-            if commandinfo.parametertype=="void":
-                return "-"
-            return "(%s) - %s" % (commandinfo.parametertype, commandinfo.parameterdescription)
+            def writecommandparameter(commandinfo):
+                if commandinfo.parametertype=="void":
+                    return "-"
+                return "(%s) - %s" % (commandinfo.parametertype, commandinfo.parameterdescription)
 
-        def writecommandresult(commandinfo):
-            if commandinfo.resulttype=="void":
-                return "-"
-            return "(%s) - %s" % (commandinfo.resulttype, commandinfo.resultdescription)
+            def writecommandresult(commandinfo):
+                if commandinfo.resulttype=="void":
+                    return "-"
+                return "(%s) - %s" % (commandinfo.resulttype, commandinfo.resultdescription)
 
-        commandtable_description = [
-            ("Name", lambda p : p.name),
-            ("Parameter", writecommandparameter),
-            ("Result", writecommandresult),
-            ("Description", lambda p : p.description)
-        ]
+            commandtable_description = [
+                ("Name", lambda p : p.name),
+                ("Parameter", writecommandparameter),
+                ("Result", writecommandresult),
+                ("Description", lambda p : p.description)
+            ]
 
-        self.write_table(commandtable_description, documentation.commands)
+            self.write_table(commandtable_description, documentation.commands)
 
-        self.file.write("## Attributes\n\n")
+        if len(documentation.attributes) > 0:
+            self.file.write("## Attributes\n\n")
 
-        attributetable_description = [
-            ("Name", lambda p : p.name),
-            ("Type", lambda p : p.type),
-            ("Description", lambda p : p.description)
-        ]
+            attributetable_description = [
+                ("Name", lambda p : p.name),
+                ("Type", lambda p : p.type),
+                ("Description", lambda p : p.description)
+            ]
 
-        self.write_table(attributetable_description, documentation.attributes)
+            self.write_table(attributetable_description, documentation.attributes)
