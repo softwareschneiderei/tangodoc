@@ -29,6 +29,7 @@ class XmiParser:
         tree = ET.parse(filename);
         root = tree.getroot()
 
+        resultlist = []
 
         for classinfo in root.findall("classes"):
 
@@ -43,7 +44,7 @@ class XmiParser:
                 default = propertyinfo.find("DefaultPropValue").text
                 print "\n\nPROPERTY - %s (type=%s, default=%s)" % (name, type, default)
                 print "--"
-                print description
+                print ' '.join(description.splitlines())
                 result.addproperty(name, description, type, default)
 
             for commandinfo in classinfo.findall("commands"):
@@ -64,3 +65,7 @@ class XmiParser:
                     print "Result: ", result_description, result_type
 
                 result.addcommand(name, description, parameter_type, parameter_description, result_type, result_description)
+
+            resultlist.append(result)
+
+        return resultlist
