@@ -1,14 +1,30 @@
 __author__ = 'vagrant'
 import XmiParser
 from MarkdownGenerator import MarkdownGenerator
+import unicodedata
+import string
+import sys
+from __future__ import print_function
+
+def error(*objs):
+    print("ERROR: ", *objs, file=sys.stderr)
+    sys.exit(1)
+
+def slugify(filename):
+    validFilenameChars = "-_.() %s%s" % (string.ascii_letters, string.digits)
+    cleanedFilename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore')
+    return ''.join(c for c in cleanedFilename if c in validFilenameChars)
 
 if __name__ == "__main__":
-    parser = XmiParser.XmiParser()
-    documentationlist = parser.parse("MAXv.xmi")
-    documentationlist += parser.parse("SIS3820.xmi")
-    #documentationlist += parser.parse("UcaDevice.xmi")
+    if len(sys.argv) < 2:
+        error("tangodoc <input-files>")
 
-    with open("doc.md", "wb") as file:
-        generator = MarkdownGenerator(file)
+    parser = XmiParser.XmiParser()
+
+    for input in sys.argv[1:]:
+        documentationlist = parser.parse(input)
+
         for documentation in documentationlist:
-            generator.dump(documentation)
+            with open("%s.md" % slugify(documentation.name), "wb") as file:
+                generator = MarkdownGenerator(file)
+                generator.dump(documentation)
