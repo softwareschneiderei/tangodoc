@@ -24,6 +24,8 @@ if __name__ == "__main__":
         documentationlist = parser.parse(input)
 
         for documentation in documentationlist:
-            with open("%s.md" % slugify(documentation.name), "wb") as file:
+            filename = "%s.md" % slugify(documentation.name)
+            with open(filename, "wb") as file:
                 generator = MarkdownGenerator(file)
                 generator.dump(documentation)
+                print("Created %s for device class %s." % (filename, documentation.name))

@@ -8,12 +8,14 @@ class XmiParser:
     __type_translation_table = {
         "pogoDsl:VoidType" : "void",
         "pogoDsl:FloatType" : "float",
+        "pogoDsl:DoubleType" : "double",
         "pogoDsl:BooleanType" : "boolean",
         "pogoDsl:StringType": "string",
         "pogoDsl:ConstStringType": "string",
-        "pogoDsl:IntType": "integer",
-        "pogoDsl:UShortType" : "unsigned short integer",
-        "pogoDsl:UIntType" : "unsigned integer",
+        "pogoDsl:IntType": "int",
+        "pogoDsl:UCharType" : "unsigned char",
+        "pogoDsl:UShortType" : "unsigned short",
+        "pogoDsl:UIntType" : "unsigned int",
         "pogoDsl:StateType" : "state",
         "pogoDsl:UIntArrayType" : "unsigned int array"
     }
@@ -44,35 +46,23 @@ class XmiParser:
             if descriptionnode is not None:
                 result.description = descriptionnode.get("description")
 
-            print classinfo.attrib["name"]
-
             for propertyinfo in classinfo.findall("deviceProperties"):
                 name = propertyinfo.attrib["name"]
                 description = propertyinfo.attrib["description"]
                 type = self.__get_type(propertyinfo)
                 defaultnode = propertyinfo.find("DefaultPropValue")
                 default = defaultnode.text if defaultnode is not None else "-"
-                print "\n\nPROPERTY - %s (type=%s, default=%s)" % (name, type, default)
-                print "--"
-                print ' '.join(description.splitlines())
                 result.addproperty(name, description, type, default)
 
             for commandinfo in classinfo.findall("commands"):
                 name = commandinfo.attrib["name"]
                 description = commandinfo.attrib["description"]
-                print "\n\nCOMMAND -  %s" % name
-                print "--"
-                print description
                 argin = commandinfo.find("argin")
                 parameter_description = argin.get("description")
                 parameter_type = self.__get_type(argin)
-                if parameter_type!="void":
-                    print "Parameter: ", parameter_description, parameter_type
                 argout = commandinfo.find("argout")
                 result_description = argout.get("description")
                 result_type = self.__get_type(argout)
-                if result_type!="void":
-                    print "Result: ", result_description, result_type
 
                 result.addcommand(name, description, parameter_type, parameter_description, result_type, result_description)
 
