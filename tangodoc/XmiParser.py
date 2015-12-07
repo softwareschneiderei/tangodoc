@@ -38,6 +38,12 @@ class XmiParser:
 
             result = Documentation()
             result.name = classinfo.attrib["name"]
+
+            # Yes, the description is in an attrib called description in a node called description
+            descriptionnode = classinfo.find("description")
+            if descriptionnode is not None:
+                result.description = descriptionnode.get("description")
+
             print classinfo.attrib["name"]
 
             for propertyinfo in classinfo.findall("deviceProperties"):
