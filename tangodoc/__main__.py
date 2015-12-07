@@ -1,10 +1,9 @@
-__author__ = 'vagrant'
+from __future__ import print_function
 import XmiParser
 from MarkdownGenerator import MarkdownGenerator
 import unicodedata
 import string
 import sys
-from __future__ import print_function
 
 def error(*objs):
     print("ERROR: ", *objs, file=sys.stderr)
@@ -12,7 +11,7 @@ def error(*objs):
 
 def slugify(filename):
     validFilenameChars = "-_.() %s%s" % (string.ascii_letters, string.digits)
-    cleanedFilename = unicodedata.normalize('NFKD', filename).encode('ASCII', 'ignore')
+    cleanedFilename = unicodedata.normalize('NFKD', unicode(filename, "utf-8")).encode('ASCII', 'ignore')
     return ''.join(c for c in cleanedFilename if c in validFilenameChars)
 
 if __name__ == "__main__":
