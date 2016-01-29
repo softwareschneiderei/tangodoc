@@ -1,37 +1,40 @@
+from xml.etree.ElementTree import ElementTree
+
 __author__ = 'marius.elvert@softwareschneiderei.de'
 
-import xml.etree.ElementTree as ET
-from Documentation import Documentation
+import xml.etree.ElementTree as ElemTree
+from documentation import Documentation
 
-class XmiParser:
+
+class XmiParser(object):
 
     __type_translation_table = {
-        "pogoDsl:VoidType" : "void",
-        "pogoDsl:FloatType" : "float",
-        "pogoDsl:DoubleType" : "double",
-        "pogoDsl:BooleanType" : "boolean",
+        "pogoDsl:VoidType": "void",
+        "pogoDsl:FloatType": "float",
+        "pogoDsl:DoubleType": "double",
+        "pogoDsl:BooleanType": "boolean",
         "pogoDsl:StringType": "string",
         "pogoDsl:ConstStringType": "string",
         "pogoDsl:IntType": "int",
-        "pogoDsl:UCharType" : "unsigned char",
-        "pogoDsl:UShortType" : "unsigned short",
-        "pogoDsl:UIntType" : "unsigned int",
-        "pogoDsl:StateType" : "state",
-        "pogoDsl:UIntArrayType" : "unsigned int array"
+        "pogoDsl:UCharType": "unsigned char",
+        "pogoDsl:UShortType": "unsigned short",
+        "pogoDsl:UIntType": "unsigned int",
+        "pogoDsl:StateType": "state",
+        "pogoDsl:UIntArrayType": "unsigned int array"
     }
 
-    def __translate_type(self, type):
-        if type in self.__type_translation_table:
-            return self.__type_translation_table[type]
+    def __translate_type(self, data_type):
+        if data_type in self.__type_translation_table:
+            return self.__type_translation_table[data_type]
         else:
-            return type
+            return data_type
 
     def __get_type(self, node, nodename="type"):
-        namespace = {'xsi' : 'http://www.w3.org/2001/XMLSchema-instance'}
+        namespace = {'xsi': 'http://www.w3.org/2001/XMLSchema-instance'}
         return self.__translate_type(node.find(nodename).get("{%s}type" % namespace['xsi']))
 
     def parse(self, filename):
-        tree = ET.parse(filename);
+        tree = ElemTree.parse(filename)
         root = tree.getroot()
 
         resultlist = []
