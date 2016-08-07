@@ -1,6 +1,7 @@
 from __future__ import print_function
 import xmiparser
 from markdown_generator import MarkdownGenerator
+from exported_device_extractor import ExportedDeviceExtractor
 import unicodedata
 import string
 import sys
@@ -18,12 +19,17 @@ def slugify(base_file_name):
 
 if __name__ == "__main__":
     if len(sys.argv) < 2:
-        error("tangodoc <input-files>")
+        error("tangodoc <input-files> | -d <device_urls>")
 
-    parser = xmiparser.XmiParser()
+    if sys.argv[1] == '-d':
+        parser = ExportedDeviceExtractor()
+        devices = sys.argv[2:]
+    else:
+        parser = xmiparser.XmiParser()
+        devices = sys.argv[1:]
 
-    for input_files in sys.argv[1:]:
-        documentation_list = parser.parse(input_files)
+    for device_spec in devices:
+        documentation_list = parser.parse(device_spec)
 
         for documentation in documentation_list:
             filename = "%s.md" % slugify(documentation.name)

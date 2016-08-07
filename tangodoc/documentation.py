@@ -19,10 +19,10 @@ class Documentation:
             self.resultdescription = result_description
 
     class AttributeInfo:
-        def __init__(self, name, description, type):
+        def __init__(self, name, description, type_name):
             self.name = name
             self.description = description
-            self.type = type
+            self.type = type_name
 
     def __init__(self):
         self.name = ""
@@ -31,13 +31,13 @@ class Documentation:
         self.commands = []
         self.attributes = []
 
-    def addproperty(self, name, description, type, default):
-        self.properties.append(Documentation.PropertyInfo(name, description, type, default))
+    def addproperty(self, name, description, type_name, default):
+        self.properties.append(Documentation.PropertyInfo(name, description, type_name, default))
 
     def addcommand(self, name, description, parameter_type, parameter_description, result_type, result_description):
         self.commands.append(
             Documentation.CommandInfo(name, description, parameter_type, parameter_description, result_type,
                                       result_description))
 
-    def addattribute(self, name, description, type):
-        self.attributes.append(Documentation.AttributeInfo(name, description, type))
+    def addattribute(self, name, description, type_name):
+        self.attributes.append(Documentation.AttributeInfo(name, description, type_name))
